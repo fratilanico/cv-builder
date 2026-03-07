@@ -1,0 +1,113 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0f0f1a;
+  --foreground: #e0e0e0;
+  --accent: #3ECF8E;
+  --surface: #1a1a2e;
+  --surface-light: #1e1e35;
+  --border: #333355;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  margin: 0;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-shell {
+  flex: 1;
+  display: flex;
+  gap: 24px;
+  padding: 24px;
+  max-width: 1800px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.upload-panel {
+  width: 380px;
+  max-width: 100%;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.preview-panel {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+  overflow: auto;
+}
+
+@media (max-width: 1100px) {
+  .main-shell {
+    flex-direction: column;
+  }
+
+  .upload-panel {
+    width: 100%;
+  }
+}
+
+/* Spinner animation for upload */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f0f1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333355;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #444466;
+}
+
+/* Print styles */
+@media print {
+  body {
+    background: white;
+  }
+  #app-header,
+  #upload-panel,
+  #export-bar {
+    display: none !important;
+  }
+  #cv-preview {
+    box-shadow: none !important;
+    margin: 0 !important;
+  }
+}

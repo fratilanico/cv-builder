@@ -1,87 +1,55 @@
-# 🧑‍💼 AI-Powered CV Builder
+# CV Builder
 
-> Open-source CV builder with Claude AI enhancement — built live at the APEX OS Webinar
+Open-source CV builder that accepts a `.pdf` or `.docx`, extracts the content, sends it through Claude running on your VM, and renders it into the dark Quanteam-style HTML/PDF template.
 
-[![Next.js](https://img.shields.io/badge/Next.js-14-black?style=flat-square&logo=nextdotjs)](https://nextjs.org)
-[![Supabase](https://img.shields.io/badge/Supabase-Database-3ECF8E?style=flat-square&logo=supabase)](https://supabase.com)
-[![Claude AI](https://img.shields.io/badge/Claude-AI-CC785C?style=flat-square)](https://anthropic.com)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
+## What It Does
 
----
+- Upload a Word or PDF CV
+- Extract raw text from the file on the server
+- Convert the content into a structured CV JSON model with Claude running locally on your VM
+- Render the result in the fixed dark template from the supplied reference CV
+- Export the preview back to PDF in the same structure
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
 git clone https://github.com/fratilanico/cv-builder.git
 cd cv-builder
 cp .env.example .env.local
-# Add your Supabase + Anthropic API keys to .env.local
+# optional: point to your Claude CLI binary/model if needed
 npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open `http://localhost:3000`.
 
----
+## Environment
 
-## 📖 Full Build Guide
+The app uses the local `claude` CLI on your VM, authenticated via your existing Claude Code OAuth/session setup.
 
-This project was built live in a 1.5-hour webinar session.
+Optional env vars:
 
-**Complete step-by-step guide:** [github.com/fratilanico/webinar](https://github.com/fratilanico/webinar)
-
-The webinar README covers:
-
-```
-┌─────────────────────────────────────────────────────┐
-│                  WEBINAR SESSIONS                   │
-├───────────────┬─────────────────────────────────────┤
-│  Time         │  Topic                             │
-├───────────────┼─────────────────────────────────────┤
-│  00:00–05:00  │  Welcome + architecture overview   │
-│  05:00–15:00  │  Project setup (Next.js + Supabase)│
-│  15:00–30:00  │  Core CV Builder UI                │
-│  30:00–50:00  │  Claude AI integration             │
-│  50:00–60:00  │  Testing + deploy to Vercel        │
-│  60:00–90:00  │  Q&A + architecture deep-dive      │
-└───────────────┴─────────────────────────────────────┘
+```bash
+CLAUDE_BIN=/Users/nico/.local/bin/claude
+CLAUDE_MODEL=sonnet
 ```
 
----
+## Stack
 
-## ✨ Features
+- Next.js App Router
+- TypeScript
+- Tailwind CSS 4
+- Claude CLI on your VM
+- `mammoth` for `.docx` extraction
+- `pdf-parse` for `.pdf` extraction
+- `html2canvas-pro` + `jspdf` for PDF export
 
-- Real-time split-pane editor + preview
-- AI-powered section enhancement (Claude API)
-- Dark / light mode (Supabase neon green aesthetic)
-- Supabase auth + database with Row Level Security
-- One-click deploy to Vercel
-- Fully open source under MIT license
+## Notes
 
----
+- The output template is intentionally fixed to the supplied dark CV structure.
+- The server route shells out to `claude --print` with tools disabled, so it follows your VM-based Claude setup instead of direct vendor APIs.
+- No Supabase or auth setup is required for this version.
 
-## 🏗️ Tech Stack
+## License
 
-```
-┌─────────────────────────────────────────────────────┐
-│                    TECH STACK                       │
-├───────────────────┬─────────────────────────────────┤
-│  Layer            │  Technology                    │
-├───────────────────┼─────────────────────────────────┤
-│  Frontend         │  Next.js 14 App Router         │
-│  UI Components    │  shadcn/ui + Tailwind CSS       │
-│  Database         │  Supabase (Postgres)            │
-│  Auth             │  Supabase Auth                  │
-│  AI               │  Claude API (Anthropic)         │
-│  Language         │  TypeScript 5                  │
-│  Deployment       │  Vercel                         │
-└───────────────────┴─────────────────────────────────┘
-```
-
----
-
-## 📄 License
-
-MIT © [Nico Fratila](https://github.com/fratilanico)
-
-See [LICENSE](LICENSE) for details.
+MIT. See `LICENSE`.
