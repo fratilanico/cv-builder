@@ -31,8 +31,15 @@ Optional env vars:
 
 ```bash
 CLAUDE_BIN=/Users/nico/.local/bin/claude
+CLAUDE_COMMAND="ssh ubuntu@4.231.218.96 claude"
+CLAUDE_SSH_TARGET=ubuntu@4.231.218.96
+CLAUDE_REMOTE_BIN=claude
 CLAUDE_MODEL=sonnet
 ```
+
+If your local machine does not have a fresh Claude session, set `CLAUDE_COMMAND` to your VM command and the app will stream prompts over SSH to the remote Claude CLI.
+
+`CLAUDE_SSH_TARGET` is the safer SSH mode because it preserves the remote `claude` arguments exactly.
 
 ## Stack
 
