@@ -34,7 +34,7 @@ function AppContent() {
             </div>
 
             <div className="status-strip" aria-label="System status">
-              <span className="status-pill">Private worker</span>
+              <span className="status-pill">Provider adapter</span>
               <span className="status-pill">OCR fallback</span>
               <span className="status-pill">PDF export</span>
             </div>
@@ -55,8 +55,8 @@ function AppContent() {
       <main id="main-content" className="main-shell">
         <aside id="upload-panel" className="upload-panel">
           <section className="control-card control-card--hero">
-            <p className="panel-kicker">Remote workflow</p>
-              <h1 className="panel-title">Upload once. Parse through a private worker. Ship a polished CV.</h1>
+            <p className="panel-kicker">Parser workflow</p>
+              <h1 className="panel-title">Upload once. Parse through your chosen provider. Ship a polished CV.</h1>
             <p className="panel-copy">
               This builder is tuned to your dark Quanteam structure. It accepts raw Word or PDF input,
               extracts content, normalizes the response, and stages the final document for export.
@@ -87,8 +87,8 @@ function AppContent() {
               <li>
                 <span>02</span>
                 <div>
-                  <strong>Parse securely</strong>
-                  <p>OCR fallback handles scanned pages before Claude structures the content.</p>
+                  <strong>Parse with your stack</strong>
+                  <p>OCR fallback handles scanned pages before your configured provider structures the content.</p>
                 </div>
               </li>
               <li>
@@ -116,7 +116,7 @@ function AppContent() {
             <div className="chip-grid">
               {[
                 "Next.js App Router",
-                "Private remote worker",
+                "Provider adapter layer",
                 "Swift OCR fallback",
                 "TypeScript",
                 "HTML to PDF export",

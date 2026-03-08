@@ -1,19 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { execFile, spawn } from "node:child_process";
+import { execFile } from "node:child_process";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import os from "node:os";
 import { promisify } from "node:util";
+import { structureCvData } from "@/lib/cv-parser";
 import type { CVData } from "@/types/cv";
 
 export const maxDuration = 240;
-const CLAUDE_TIMEOUT_MS = 180_000;
 
 const execFileAsync = promisify(execFile);
-
-function shellQuote(value: string): string {
-  return `'${value.replaceAll("'", `'\\''`)}'`;
-}
 
 function slugify(value: string, fallback: string): string {
   const slug = value
@@ -233,127 +229,6 @@ async function extractTextFromDOCX(buffer: Buffer): Promise<string> {
   return result.value;
 }
 
-async function structureCvWithClaudeCli(extractedText: string) {
-  const claudeBin = process.env.CLAUDE_BIN || "claude";
-  const claudeModel = process.env.CLAUDE_MODEL || "sonnet";
-  const claudeCommand = process.env.CLAUDE_COMMAND?.trim();
-  const claudeSshTarget = process.env.CLAUDE_SSH_TARGET?.trim();
-  const claudeRemoteBin = process.env.CLAUDE_REMOTE_BIN?.trim() || "claude";
-
-  const prompt = [
-    "<system>",
-    "You are an APEX OS CV parsing worker.",
-    "Context: raw CV text was extracted from an uploaded PDF or DOCX file.",
-    "Task: transform that raw text into structured JSON for a fixed dark Quanteam-style CV template.",
-    "Guardrails:",
-    "- Preserve facts from the source CV. Do not invent employers, dates, metrics, or projects.",
-    "- Use only safe inline tags: <strong> and <code> inside string fields when emphasis is useful.",
-    "- Keep output machine-parseable JSON only.",
-    "- If data is missing, use an empty string or empty array.",
-    "</system>",
-    "",
-    "<user>",
-    "Return JSON for the provided schema.",
-    "Map the CV into these sections: personalDetails, summary, strategicPhilosophy, skillCategories, techTags, projects, experience, footer.",
-    "Use 2-4 skill categories where possible.",
-    "For promotions within one company, use subRoles.",
-    "For single-role companies, use top-level bullets.",
-    "Think step by step before answering, but output only the final JSON.",
-    "",
-    "CV TEXT:",
-    extractedText,
-    "</user>",
-  ].join("\n");
-
-  const { stdout, stderr } = await new Promise<{ stdout: string; stderr: string }>((resolve, reject) => {
-    const child = claudeSshTarget
-      ? spawn(
-          "ssh",
-          [
-            claudeSshTarget,
-            `${claudeRemoteBin} --print --output-format text --model ${shellQuote(claudeModel)} --tools \"\"`,
-          ],
-          {
-            env: process.env,
-            stdio: ["pipe", "pipe", "pipe"],
-          }
-        )
-      : claudeCommand
-      ? spawn(
-          "bash",
-          [
-            "-lc",
-            `${claudeCommand} --print --output-format text --model ${shellQuote(claudeModel)} --tools \"\"`,
-          ],
-          {
-            env: process.env,
-            stdio: ["pipe", "pipe", "pipe"],
-          }
-        )
-      : spawn(
-          claudeBin,
-          [
-            "--print",
-            "--output-format",
-            "text",
-            "--model",
-            claudeModel,
-            "--tools",
-            "",
-          ],
-          {
-            env: process.env,
-            stdio: ["pipe", "pipe", "pipe"],
-          }
-        );
-
-    let stdout = "";
-    let stderr = "";
-
-    child.stdout.on("data", (chunk) => {
-      stdout += chunk.toString();
-    });
-
-    child.stderr.on("data", (chunk) => {
-      stderr += chunk.toString();
-    });
-
-    const timeout = setTimeout(() => {
-      child.kill("SIGTERM");
-      reject(new Error("Claude CLI timed out while structuring CV data"));
-    }, CLAUDE_TIMEOUT_MS);
-
-    child.on("error", (error) => {
-      clearTimeout(timeout);
-      reject(error);
-    });
-
-    child.on("close", (code) => {
-      clearTimeout(timeout);
-      if (code !== 0) {
-        reject(new Error(stderr.trim() || `Claude CLI exited with code ${code}`));
-        return;
-      }
-
-      resolve({ stdout, stderr });
-    });
-
-    child.stdin.write(prompt);
-    child.stdin.end();
-  });
-
-  const raw = stdout.trim();
-  if (!raw) {
-    throw new Error(`Claude CLI returned empty output${stderr ? `: ${stderr.trim()}` : ""}`);
-  }
-
-  const jsonText = raw.startsWith("```")
-    ? raw.replace(/^```(?:json)?\s*/, "").replace(/\s*```$/, "")
-    : raw;
-
-  return JSON.parse(jsonText);
-}
-
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
@@ -392,7 +267,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const cvData = normalizeCvData(await structureCvWithClaudeCli(extractedText));
+    const cvData = normalizeCvData(await structureCvData(extractedText));
 
     return NextResponse.json({ cvData });
   } catch (error) {

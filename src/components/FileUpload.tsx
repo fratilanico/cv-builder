@@ -97,7 +97,7 @@ export default function FileUpload() {
           <p className="upload-dropzone__eyebrow">Runtime active</p>
           <p className="upload-dropzone__title">Processing {fileName}…</p>
             <p className="upload-dropzone__copy">
-              Running OCR fallback where needed, then mapping the document through the parsing worker.
+              Running OCR fallback where needed, then mapping the document through the configured parser.
             </p>
         </div>
       ) : (
@@ -121,7 +121,7 @@ export default function FileUpload() {
           </button>
             <div className="upload-dropzone__meta" aria-hidden="true">
               <span>Quanteam structure locked</span>
-              <span>Private worker ready</span>
+              <span>Provider ready</span>
               <span>OCR-ready</span>
             </div>
         </div>

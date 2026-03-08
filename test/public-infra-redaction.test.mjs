@@ -21,6 +21,7 @@ const forbiddenPatterns = [
   /Nico's Claude VM/,
   /Claude VM over SSH/,
   /ssh ubuntu@/,
+  /private worker/i,
 ];
 
 const forbiddenPublicDocPatterns = [/CLAUDE_SSH_TARGET/, /CLAUDE_REMOTE_BIN/, /private remote runner/];
@@ -53,4 +54,15 @@ test("public docs stay focused on local setup instead of private transport detai
       );
     }
   }
+});
+
+test("public setup docs explain provider selection", async () => {
+  const readme = await readFile(path.join(repoRoot, "README.md"), "utf8");
+  const envExample = await readFile(path.join(repoRoot, ".env.example"), "utf8");
+
+  assert.match(readme, /CV_PARSER_PROVIDER/);
+  assert.match(readme, /claude-cli/);
+  assert.match(readme, /opencode-cli/);
+  assert.match(readme, /openai-compatible/);
+  assert.match(envExample, /CV_PARSER_PROVIDER=/);
 });

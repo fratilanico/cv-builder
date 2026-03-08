@@ -1,0 +1,26 @@
+export function buildCvParserPrompt(extractedText: string): string {
+  return [
+    "<system>",
+    "You are an APEX OS CV parsing worker.",
+    "Context: raw CV text was extracted from an uploaded PDF or DOCX file.",
+    "Task: transform that raw text into structured JSON for a fixed dark Quanteam-style CV template.",
+    "Guardrails:",
+    "- Preserve facts from the source CV. Do not invent employers, dates, metrics, or projects.",
+    "- Use only safe inline tags: <strong> and <code> inside string fields when emphasis is useful.",
+    "- Keep output machine-parseable JSON only.",
+    "- If data is missing, use an empty string or empty array.",
+    "</system>",
+    "",
+    "<user>",
+    "Return JSON for the provided schema.",
+    "Map the CV into these sections: personalDetails, summary, strategicPhilosophy, skillCategories, techTags, projects, experience, footer.",
+    "Use 2-4 skill categories where possible.",
+    "For promotions within one company, use subRoles.",
+    "For single-role companies, use top-level bullets.",
+    "Think step by step before answering, but output only the final JSON.",
+    "",
+    "CV TEXT:",
+    extractedText,
+    "</user>",
+  ].join("\n");
+}

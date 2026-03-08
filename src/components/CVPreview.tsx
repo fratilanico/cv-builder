@@ -34,7 +34,7 @@ export default function CVPreview({ cvData }: CVPreviewProps) {
             <p className="preview-empty-state__eyebrow">Preview pipeline idle</p>
             <h3 className="preview-empty-state__title">Upload a source CV to light up the final stage</h3>
             <p className="preview-empty-state__copy">
-              The renderer is tuned to the Quanteam structure, with OCR fallback for scanned PDFs and secure worker-backed parsing for structured output.
+              The renderer is tuned to the Quanteam structure, with OCR fallback for scanned PDFs and provider-backed parsing for structured output.
             </p>
           </div>
         </div>
