@@ -75,20 +75,8 @@ export default function PDFExportButton() {
     <button
       onClick={handleExport}
       disabled={isExporting || !hasContent}
-      style={{
-        background: hasContent ? "#3ECF8E" : "#333355",
-        color: hasContent ? "#1a1a2e" : "#666",
-        border: "none",
-        borderRadius: "6px",
-        padding: "10px 24px",
-        fontSize: "10pt",
-        fontWeight: 700,
-        cursor: hasContent ? "pointer" : "not-allowed",
-        fontFamily: "'JetBrains Mono', 'Fira Code', 'Consolas', monospace",
-        letterSpacing: "0.5px",
-        transition: "all 0.2s ease",
-        opacity: isExporting ? 0.6 : 1,
-      }}
+      className="export-button"
+      aria-label={isExporting ? "Generating PDF" : "Download PDF"}
     >
       {isExporting ? "GENERATING..." : "DOWNLOAD PDF"}
     </button>

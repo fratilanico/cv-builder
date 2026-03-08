@@ -74,58 +74,56 @@ export default function FileUpload() {
 
   return (
     <div
+      className={`upload-dropzone${dragActive ? " is-drag-active" : ""}${isLoading ? " is-loading" : ""}`}
       onDragEnter={handleDrag}
       onDragLeave={handleDrag}
       onDragOver={handleDrag}
       onDrop={handleDrop}
-      onClick={() => fileInputRef.current?.click()}
-      style={{
-        border: `2px dashed ${dragActive ? "#3ECF8E" : "#333355"}`,
-        borderRadius: "8px",
-        padding: "32px 24px",
-        textAlign: "center",
-        cursor: isLoading ? "wait" : "pointer",
-        background: dragActive ? "rgba(62, 207, 142, 0.05)" : "#1e1e35",
-        transition: "all 0.2s ease",
-      }}
     >
+      <div className="upload-dropzone__grid" aria-hidden="true" />
+
       <input
         ref={fileInputRef}
         type="file"
         accept=".pdf,.docx"
         onChange={handleChange}
-        style={{ display: "none" }}
+        className="sr-only"
+        aria-label="Upload a PDF or Word CV"
       />
 
       {isLoading ? (
-        <div>
-          <div style={{
-            width: "32px",
-            height: "32px",
-            border: "3px solid #333355",
-            borderTop: "3px solid #3ECF8E",
-            borderRadius: "50%",
-            animation: "spin 1s linear infinite",
-            margin: "0 auto 12px",
-          }} />
-          <p style={{ color: "#3ECF8E", fontSize: "11pt", fontWeight: 600 }}>
-            Processing {fileName}...
-          </p>
-          <p style={{ color: "#666", fontSize: "9pt", marginTop: "4px" }}>
-            Parsing document and structuring CV data
-          </p>
+        <div className="upload-dropzone__content" aria-live="polite">
+          <div className="upload-spinner" aria-hidden="true" />
+          <p className="upload-dropzone__eyebrow">Runtime active</p>
+          <p className="upload-dropzone__title">Processing {fileName}…</p>
+            <p className="upload-dropzone__copy">
+              Running OCR fallback where needed, then mapping the document through the parsing worker.
+            </p>
         </div>
       ) : (
-        <div>
-          <div style={{ fontSize: "28pt", marginBottom: "8px" }}>
-            <span style={{ color: "#3ECF8E" }}>&#x2191;</span>
+        <div className="upload-dropzone__content">
+          <div className="upload-glyph" aria-hidden="true">
+            <span />
           </div>
-          <p style={{ color: "#e0e0e0", fontSize: "11pt", fontWeight: 600, marginBottom: "4px" }}>
+          <p className="upload-dropzone__eyebrow">Source document</p>
+          <p className="upload-dropzone__title">
             {fileName ? `Loaded: ${fileName}` : "Drop your CV here"}
           </p>
-          <p style={{ color: "#666", fontSize: "9pt" }}>
-            Supports PDF and Word (.docx) files
+          <p className="upload-dropzone__copy">
+            Supports PDF and Word (`.docx`) files. Drag and drop, or launch the file picker.
           </p>
+          <button
+            type="button"
+            className="upload-trigger"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            Choose file
+          </button>
+            <div className="upload-dropzone__meta" aria-hidden="true">
+              <span>Quanteam structure locked</span>
+              <span>Private worker ready</span>
+              <span>OCR-ready</span>
+            </div>
         </div>
       )}
     </div>

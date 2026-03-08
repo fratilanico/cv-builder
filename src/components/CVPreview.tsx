@@ -26,12 +26,17 @@ export default function CVPreview({ cvData }: CVPreviewProps) {
         padding: "28mm 22mm 20mm 22mm",
         boxSizing: "border-box",
       }}
-    >
+      >
       {!hasContent ? (
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "200mm" }}>
-          <p style={{ color: "#555", fontSize: "14pt", textAlign: "center" }}>
-            Upload a CV document to generate your preview
-          </p>
+        <div className="preview-empty-state">
+          <div className="preview-empty-state__grid" aria-hidden="true" />
+          <div className="preview-empty-state__content">
+            <p className="preview-empty-state__eyebrow">Preview pipeline idle</p>
+            <h3 className="preview-empty-state__title">Upload a source CV to light up the final stage</h3>
+            <p className="preview-empty-state__copy">
+              The renderer is tuned to the Quanteam structure, with OCR fallback for scanned PDFs and secure worker-backed parsing for structured output.
+            </p>
+          </div>
         </div>
       ) : (
         <>

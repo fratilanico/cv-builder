@@ -242,7 +242,7 @@ async function structureCvWithClaudeCli(extractedText: string) {
 
   const prompt = [
     "<system>",
-    "You are an APEX OS CV parsing worker running on Nico's Claude VM.",
+    "You are an APEX OS CV parsing worker.",
     "Context: raw CV text was extracted from an uploaded PDF or DOCX file.",
     "Task: transform that raw text into structured JSON for a fixed dark Quanteam-style CV template.",
     "Guardrails:",
