@@ -64,6 +64,29 @@ export function extractOpencodeOutput(raw: string): string {
 
   const lines = trimmed.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
 
+  // First pass: look for OpenCode JSON event lines with type "text" (newest first)
+  const textParts: string[] = [];
+
+  for (const line of lines) {
+    try {
+      const parsed = JSON.parse(line) as Record<string, unknown>;
+      if (parsed.type === "text") {
+        const part = parsed.part as Record<string, unknown> | undefined;
+        const text = part?.text;
+        if (typeof text === "string" && text.trim()) {
+          textParts.push(text);
+        }
+      }
+    } catch {
+      continue;
+    }
+  }
+
+  if (textParts.length > 0) {
+    return textParts.join("");
+  }
+
+  // Second pass: generic extraction from any JSON line (backward, last-wins)
   for (let index = lines.length - 1; index >= 0; index -= 1) {
     try {
       const parsed = JSON.parse(lines[index]) as unknown;

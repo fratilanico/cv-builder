@@ -8,6 +8,10 @@ import {
   type ReactNode,
 } from "react";
 import { type CVData, defaultCVData } from "@/types/cv";
+import {
+  type ProviderSettings,
+  defaultProviderSettings,
+} from "@/types/provider";
 
 interface CVContextType {
   cvData: CVData;
@@ -16,6 +20,8 @@ interface CVContextType {
   setIsLoading: (loading: boolean) => void;
   error: string | null;
   setError: (error: string | null) => void;
+  providerSettings: ProviderSettings;
+  setProviderSettings: (settings: ProviderSettings) => void;
 }
 
 const CVContext = createContext<CVContextType | null>(null);
@@ -24,9 +30,14 @@ export function CVProvider({ children }: { children: ReactNode }) {
   const [cvData, setCvDataState] = useState<CVData>(defaultCVData);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [providerSettings, setProviderSettingsState] = useState<ProviderSettings>(defaultProviderSettings);
 
   const setCvData = useCallback((data: CVData) => {
     setCvDataState(data);
+  }, []);
+
+  const setProviderSettings = useCallback((settings: ProviderSettings) => {
+    setProviderSettingsState(settings);
   }, []);
 
   return (
@@ -38,6 +49,8 @@ export function CVProvider({ children }: { children: ReactNode }) {
         setIsLoading,
         error,
         setError,
+        providerSettings,
+        setProviderSettings,
       }}
     >
       {children}

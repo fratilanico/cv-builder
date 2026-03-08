@@ -6,6 +6,7 @@ import os from "node:os";
 import { promisify } from "node:util";
 import { structureCvData } from "@/lib/cv-parser";
 import type { CVData } from "@/types/cv";
+import type { ProviderSettings } from "@/types/provider";
 
 export const maxDuration = 240;
 
@@ -190,6 +191,47 @@ function normalizeCvData(input: unknown): CVData {
   };
 }
 
+function buildEnvOverrides(settings: ProviderSettings | null): Record<string, string | undefined> {
+  const env: Record<string, string | undefined> = { ...process.env };
+
+  if (!settings) return env;
+
+  env.CV_PARSER_PROVIDER = settings.provider;
+
+  if (settings.provider === "claude-cli") {
+    if (settings.claudeBin) env.CLAUDE_BIN = settings.claudeBin;
+    if (settings.claudeModel) env.CLAUDE_MODEL = settings.claudeModel;
+  }
+
+  if (settings.provider === "opencode-cli") {
+    if (settings.opencodeBin) env.OPENCODE_BIN = settings.opencodeBin;
+    if (settings.opencodeModel) env.OPENCODE_MODEL = settings.opencodeModel;
+  }
+
+  if (settings.provider === "openai-compatible") {
+    if (settings.openaiBaseUrl) env.OPENAI_BASE_URL = settings.openaiBaseUrl;
+    if (settings.openaiApiKey) env.OPENAI_API_KEY = settings.openaiApiKey;
+    if (settings.openaiModel) env.OPENAI_MODEL = settings.openaiModel;
+  }
+
+  return env;
+}
+
+function parseProviderSettings(raw: string | null): ProviderSettings | null {
+  if (!raw) return null;
+
+  try {
+    const parsed = JSON.parse(raw);
+    if (typeof parsed === "object" && parsed !== null && typeof parsed.provider === "string") {
+      return parsed as ProviderSettings;
+    }
+  } catch {
+    // Ignore invalid JSON — fall through to env defaults
+  }
+
+  return null;
+}
+
 async function extractTextFromPDF(buffer: Buffer): Promise<string> {
   const pdfParse = (await import("pdf-parse")).default;
   const data = await pdfParse(buffer);
@@ -233,6 +275,9 @@ export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
     const file = formData.get("file") as File;
+    const providerSettingsRaw = formData.get("providerSettings") as string | null;
+    const clientSettings = parseProviderSettings(providerSettingsRaw);
+    const env = buildEnvOverrides(clientSettings);
 
     if (!file) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
@@ -267,7 +312,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const cvData = normalizeCvData(await structureCvData(extractedText));
+    const cvData = normalizeCvData(await structureCvData(extractedText, env));
 
     return NextResponse.json({ cvData });
   } catch (error) {

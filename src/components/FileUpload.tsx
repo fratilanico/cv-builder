@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { useCV } from "@/context/CVContext";
 
 export default function FileUpload() {
-  const { setCvData, setIsLoading, setError, isLoading } = useCV();
+  const { setCvData, setIsLoading, setError, isLoading, providerSettings } = useCV();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragActive, setDragActive] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
@@ -27,6 +27,7 @@ export default function FileUpload() {
     try {
       const formData = new FormData();
       formData.append("file", file);
+      formData.append("providerSettings", JSON.stringify(providerSettings));
 
       const response = await fetch("/api/parse-cv", {
         method: "POST",
@@ -121,7 +122,7 @@ export default function FileUpload() {
           </button>
             <div className="upload-dropzone__meta" aria-hidden="true">
               <span>Quanteam structure locked</span>
-              <span>Provider ready</span>
+              <span>{providerSettings.provider}</span>
               <span>OCR-ready</span>
             </div>
         </div>

@@ -3,10 +3,11 @@
 import FileUpload from "@/components/FileUpload";
 import CVPreview from "@/components/CVPreview";
 import PDFExportButton from "@/components/PDFExportButton";
+import ProviderSettings from "@/components/ProviderSettings";
 import { CVProvider, useCV } from "@/context/CVContext";
 
 function AppContent() {
-  const { cvData, error, isLoading } = useCV();
+  const { cvData, error, isLoading, setProviderSettings } = useCV();
 
   const hasContent = Boolean(
     cvData.personalDetails.fullName ||
@@ -63,6 +64,8 @@ function AppContent() {
             </p>
             <FileUpload />
           </section>
+
+          <ProviderSettings onSettingsChange={setProviderSettings} />
 
           {error && (
             <div className="alert-card" role="alert" aria-live="polite">
